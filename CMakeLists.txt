@@ -58,11 +58,13 @@ if(LIBENVPP_INSTALL)
 	set(FMT_INSTALL ON CACHE BOOL "" FORCE)
 endif()
 include(FetchContent)
-FetchContent_Declare(fmt
-	GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-	GIT_TAG 11.0.2
-)
-FetchContent_MakeAvailable(fmt)
+if(FMT_INSTALL)
+	FetchContent_Declare(fmt
+		GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+		GIT_TAG 11.0.2
+	)
+	FetchContent_MakeAvailable(fmt)
+endif()
 
 if(LIBENVPP_TESTS)
 	FetchContent_Declare(Catch2
@@ -90,7 +92,9 @@ add_library(libenvpp STATIC ${LIBENVPP_SOURCES} ${LIBENVPP_INCLUDES})
 add_library(libenvpp::libenvpp ALIAS libenvpp)
 libenvpp_set_compiler_parameters(libenvpp)
 set_target_properties(libenvpp PROPERTIES PREFIX "")
-target_link_libraries(libenvpp PUBLIC fmt::fmt)
+if(FMT_INSTALL)
+	target_link_libraries(libenvpp PUBLIC fmt::fmt)
+endif()
 target_include_directories(libenvpp PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
